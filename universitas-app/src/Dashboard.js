@@ -9,6 +9,37 @@ function Dashboard() {
   
   const [students, setStudents] = useState([]);
 
+  const handleLogout = useCallback(() => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  navigate('/login');
+  }, [navigate]);
+
+  if (!user) {
+    return (
+      <div className="container py-5">
+        <div className="text-center">
+          <div className="spinner-border" style={{ color: '#3B82F6' }} role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const fetchStudents = useCallback(async (token) => {
+    try {
+      const response = await axios.get('https://e4rthen.pythonanywhere.com/api/auth/students/', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      setStudents(response.data);
+    } catch (err) {
+      console.error('Gagal mengambil data siswa', err);
+    }
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (token) {
@@ -26,20 +57,7 @@ function Dashboard() {
     } else {
       navigate('/login');
     }
-  }, [navigate, handleLogout]);
-
-  const fetchStudents = async (token) => {
-    try {
-      const response = await axios.get('https://e4rthen.pythonanywhere.com/api/auth/students/', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      setStudents(response.data);
-    } catch (err) {
-      console.error('Gagal mengambil data siswa', err);
-    }
-  };
+  }, [navigate, handleLogout, fetchStudents]);
 
   const handleInputChange = (studentId, newGrade) => {
     const numericRegex = /^[0-9]*\.?[0-9]*$/;
@@ -80,24 +98,6 @@ function Dashboard() {
       console.error('Gagal update nilai', err);
     }
   };
-
-  const handleLogout = useCallback(() => {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  navigate('/login');
-  }, [navigate]);
-
-  if (!user) {
-    return (
-      <div className="container py-5">
-        <div className="text-center">
-          <div className="spinner-border" style={{ color: '#3B82F6' }} role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="container py-4">
