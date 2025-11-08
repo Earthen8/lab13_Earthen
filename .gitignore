@@ -1,0 +1,16 @@
+# Virtual Environment
+/venv/
+
+# File Database Django
+*.sqlite3
+
+# Cache Python/Django
+**/__pycache__/
+*.pyc
+
+# File .env
+.env
+*.env
+
+# File log
+*.log
