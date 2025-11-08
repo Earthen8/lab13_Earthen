@@ -30,7 +30,7 @@ function Dashboard() {
 
   const fetchStudents = async (token) => {
     try {
-      const response = await axios.get('/api/auth/students/', {
+      const response = await axios.get('https://e4rthen.pythonanywhere.com/api/auth/students/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -70,7 +70,7 @@ function Dashboard() {
     const newGrade = student.grade || "";
 
     try {
-      await axios.patch(`/api/auth/students/${studentId}/`, {
+      await axios.patch(`https://e4rthen.pythonanywhere.com/api/auth/students/${studentId}/`, {
         grade: newGrade
       }, {
         headers: { 'Authorization': `Bearer ${token}` }

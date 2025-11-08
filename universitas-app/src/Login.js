@@ -14,7 +14,7 @@ function Login() {
     setError(null);
 
     try {
-      const response = await axios.post('/api/auth/login/', {
+      const response = await axios.post('https://e4rthen.pythonanywhere.com/api/auth/login/', {
         email: email,
         password: password
       });

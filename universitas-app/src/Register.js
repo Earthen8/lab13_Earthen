@@ -18,7 +18,7 @@ function Register() {
   useEffect(() => {
     const fetchMajors = async () => {
       try {
-        const response = await axios.get('/api/majors/');
+        const response = await axios.get('https://e4rthen.pythonanywhere.com/api/majors/');
         setMajorOptions(response.data);
         if (response.data.length > 0) {
           setMajor(response.data[0].value); 
@@ -47,7 +47,7 @@ function Register() {
     }
 
     try { 
-      await axios.post('/api/auth/register/', {
+      await axios.post('https://e4rthen.pythonanywhere.com/api/auth/register/', {
         email: email,
         username: username,
         full_name: fullName,
