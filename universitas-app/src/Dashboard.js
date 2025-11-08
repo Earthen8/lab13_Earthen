@@ -7,7 +7,7 @@ function Dashboard() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [students, setStudents] = useState([]);
-  
+
   const handleLogout = useCallback(() => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -150,7 +150,7 @@ function Dashboard() {
       )}
 
       {/* Instructor View */}
-      {user.rowle === 'instructor' && (
+      {user.role === 'instructor' && (
         <div className="card shadow-sm border-0" style={{ borderRadius: '1rem' }}>
           <div className="card-body p-4">
             <h3 className="fw-bold mb-4" style={{ color: '#1E3A8A' }}>Student Grade Management</h3>
