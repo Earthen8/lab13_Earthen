@@ -6,26 +6,13 @@ import axios from 'axios';
 function Dashboard() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  
   const [students, setStudents] = useState([]);
-
+  
   const handleLogout = useCallback(() => {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  navigate('/login');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    navigate('/login');
   }, [navigate]);
-
-  if (!user) {
-    return (
-      <div className="container py-5">
-        <div className="text-center">
-          <div className="spinner-border" style={{ color: '#3B82F6' }} role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   const fetchStudents = useCallback(async (token) => {
     try {
@@ -39,6 +26,42 @@ function Dashboard() {
       console.error('Gagal mengambil data siswa', err);
     }
   }, []);
+
+  const handleInputChange = (studentId, newGrade) => {
+    const numericRegex = /^[0-9]*\.?[0-9]*$/;
+    if (numericRegex.test(newGrade)) {
+      const numericValue = Number(newGrade);
+      if (
+        newGrade === "" ||
+        newGrade === "." ||
+        (numericValue >= 0 && numericValue <= 100)
+      ) {
+        setStudents(prevStudents =>
+          prevStudents.map(student =>
+            student.id === studentId ? { ...student, grade: newGrade } : student
+          )
+        );
+      }
+    }
+  };
+
+  const handleSubmitGrade = async (studentId) => {
+    const token = localStorage.getItem('access_token');
+    const student = students.find(s => s.id === studentId);
+    if (!student) return;
+    const newGrade = student.grade || "";
+
+    try {
+      await axios.patch(`https://e4rthen.pythonanywhere.com/api/auth/students/${studentId}/`, {
+        grade: newGrade
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      console.log(`Nilai untuk ${student.full_name} berhasil disimpan!`);
+    } catch (err) {
+      console.error('Gagal update nilai', err);
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -59,45 +82,17 @@ function Dashboard() {
     }
   }, [navigate, handleLogout, fetchStudents]);
 
-  const handleInputChange = (studentId, newGrade) => {
-    const numericRegex = /^[0-9]*\.?[0-9]*$/;
-
-    if (numericRegex.test(newGrade)) {
-      const numericValue = Number(newGrade);
-      
-      if (
-        newGrade === "" ||
-        newGrade === "." ||
-        (numericValue >= 0 && numericValue <= 100)
-      ) {
-        setStudents(prevStudents =>
-          prevStudents.map(student =>
-            student.id === studentId ? { ...student, grade: newGrade } : student
-          )
-        );
-      }
-    }
-  };
-
-  const handleSubmitGrade = async (studentId) => {
-    const token = localStorage.getItem('access_token');
-
-    const student = students.find(s => s.id === studentId);
-    if (!student) return;
-
-    const newGrade = student.grade || "";
-
-    try {
-      await axios.patch(`https://e4rthen.pythonanywhere.com/api/auth/students/${studentId}/`, {
-        grade: newGrade
-      }, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      console.log(`Nilai untuk ${student.full_name} berhasil disimpan!`);
-    } catch (err) {
-      console.error('Gagal update nilai', err);
-    }
-  };
+  if (!user) {
+    return (
+      <div className="container py-5">
+        <div className="text-center">
+          <div className="spinner-border" style={{ color: '#3B82F6' }} role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-4">
@@ -155,7 +150,7 @@ function Dashboard() {
       )}
 
       {/* Instructor View */}
-      {user.role === 'instructor' && (
+      {user.rowle === 'instructor' && (
         <div className="card shadow-sm border-0" style={{ borderRadius: '1rem' }}>
           <div className="card-body p-4">
             <h3 className="fw-bold mb-4" style={{ color: '#1E3A8A' }}>Student Grade Management</h3>
