@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
@@ -26,7 +26,7 @@ function Dashboard() {
     } else {
       navigate('/login');
     }
-  }, [navigate]);
+  }, [navigate, handleLogout]);
 
   const fetchStudents = async (token) => {
     try {
@@ -81,11 +81,11 @@ function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    navigate('/login');
-  };
+  const handleLogout = useCallback(() => {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  navigate('/login');
+  }, [navigate]);
 
   if (!user) {
     return (
